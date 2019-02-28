@@ -27,120 +27,120 @@
 import UIKit
 
 internal class Token: UIView {
-
-  var text = "" {
-    didSet {
-      updateTextLabel()
-      frame = CGRect(origin: CGPoint.zero, size: systemLayoutSizeFitting(UILayoutFittingCompressedSize))
+    
+    var text = "" {
+        didSet {
+            updateTextLabel()
+            frame = CGRect(origin: CGPoint.zero, size: systemLayoutSizeFitting(UILayoutFittingCompressedSize))
+        }
     }
-  }
-
-  var isHighlighted = false {
-    didSet {
-      updateTextLabel()
+    
+    var isHighlighted = false {
+        didSet {
+            updateTextLabel()
+        }
     }
-  }
-
-  var normalTextAttributes: [NSAttributedStringKey: NSObject] = [
-    .foregroundColor: UIColor(red: 0.14, green: 0.38, blue: 0.95, alpha: 1),
-    .backgroundColor: UIColor.clear
-  ] {
-    didSet {
-      if !isHighlighted { updateTextLabel() }
-      delimiterLabel.textColor = self.normalTextAttributes[.foregroundColor] as? UIColor
+    
+    var normalTextAttributes: [NSAttributedStringKey: NSObject] = [
+        .foregroundColor: UIColor(red: 0.14, green: 0.38, blue: 0.95, alpha: 1),
+        .backgroundColor: UIColor.clear
+        ] {
+        didSet {
+            if !isHighlighted { updateTextLabel() }
+            delimiterLabel.textColor = self.normalTextAttributes[.foregroundColor] as? UIColor
+        }
     }
-  }
-
-  var highlightedTextAttributes: [NSAttributedStringKey: NSObject] = [
-    .foregroundColor: UIColor.white,
-    .backgroundColor: UIColor(red: 0.14, green: 0.38, blue: 0.95, alpha: 1)
-  ] {
-    didSet {
-      if isHighlighted { updateTextLabel() }
+    
+    var highlightedTextAttributes: [NSAttributedStringKey: NSObject] = [
+        .foregroundColor: UIColor.white,
+        .backgroundColor: UIColor(red: 0.14, green: 0.38, blue: 0.95, alpha: 1)
+        ] {
+        didSet {
+            if isHighlighted { updateTextLabel() }
+        }
     }
-  }
-
-  // MARK: - Private Properties
-
-  private(set) lazy var delimiterLabel: UILabel = {
-    let _label = UILabel()
-    _label.textColor = self.normalTextAttributes[.foregroundColor] as? UIColor
-    _label.textAlignment = .right
-    return _label
-  }()
-
-  private(set) lazy var textLabel: UILabel = {
-    let _label = InsetLabel(contentEdgeInsets: UIEdgeInsets(top: 3, left: 5, bottom: 3, right: 5), cornerRadius: .constant(3))
-    _label.textAlignment = .center
-    _label.textColor = self.normalTextAttributes[.foregroundColor] as? UIColor
-    _label.backgroundColor = self.normalTextAttributes[.backgroundColor] as? UIColor
-    _label.numberOfLines = 1
-    return _label
-  }()
-
-  // MARK: - Initialization
-
-  override init(frame: CGRect) {
-    super.init(frame: frame)
-    setUpSubviews()
-  }
-
-  required init?(coder aDecoder: NSCoder) {
-    super.init(coder: aDecoder)
-    setUpSubviews()
-  }
-
-  convenience init(
-    text: String,
-    delimiter: String = ",",
-    normalAttributes: [NSAttributedStringKey: NSObject]? = nil,
-    highlightedAttributes: [NSAttributedStringKey: NSObject]? = nil
-  ) {
-    self.init()
-    if let attributes = normalAttributes { normalTextAttributes = attributes }
-    if let attributes = highlightedAttributes { highlightedTextAttributes = attributes }
-    delimiterLabel.text = delimiter
-    ({
-      // Workaround to trigger didSet inside the initializer
-      self.text = text
-    })()
-  }
-
-  // MARK: - Private Methods
-
-  private func updateTextLabel() {
-    var attributes = isHighlighted ? highlightedTextAttributes : normalTextAttributes
-    if let color = attributes[.backgroundColor] as? UIColor {
-      textLabel.backgroundColor = color
+    
+    // MARK: - Private Properties
+    
+    private(set) lazy var delimiterLabel: UILabel = {
+        let _label = UILabel()
+        _label.textColor = self.normalTextAttributes[.foregroundColor] as? UIColor
+        _label.textAlignment = .right
+        return _label
+    }()
+    
+    private(set) lazy var textLabel: UILabel = {
+        let _label = InsetLabel(contentEdgeInsets: UIEdgeInsets(top: 3, left: 10, bottom: 3, right: 10), cornerRadius: .dynamic)
+        _label.textAlignment = .center
+        _label.textColor = self.normalTextAttributes[.foregroundColor] as? UIColor
+        _label.backgroundColor = self.normalTextAttributes[.backgroundColor] as? UIColor
+        _label.numberOfLines = 1
+        return _label
+    }()
+    
+    // MARK: - Initialization
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setUpSubviews()
     }
-    // Avoid overlapped translucent background colors
-    attributes[.backgroundColor] = nil
-    textLabel.attributedText = NSAttributedString(string: text, attributes: attributes)
-
-    delimiterLabel.textColor = normalTextAttributes[.foregroundColor] as? UIColor
-    delimiterLabel.font = normalTextAttributes[.font] as? UIFont
-  }
-
-  private func setUpSubviews() {
-    addSubview(textLabel)
-    addSubview(delimiterLabel)
-    textLabel.translatesAutoresizingMaskIntoConstraints = false
-    delimiterLabel.translatesAutoresizingMaskIntoConstraints = false
-
-    let views = [
-      "text": textLabel,
-      "delimiter": delimiterLabel
-    ]
-    addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[text][delimiter]-5-|",
-      options: [.alignAllCenterY],
-      metrics: nil,
-      views: views
-    ))
-    addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-2-[text]-2-|",
-      options: [],
-      metrics: nil,
-      views: views
-    ))
-  }
-
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        setUpSubviews()
+    }
+    
+    convenience init(
+        text: String,
+        delimiter: String = ",",
+        normalAttributes: [NSAttributedStringKey: NSObject]? = nil,
+        highlightedAttributes: [NSAttributedStringKey: NSObject]? = nil
+        ) {
+        self.init()
+        if let attributes = normalAttributes { normalTextAttributes = attributes }
+        if let attributes = highlightedAttributes { highlightedTextAttributes = attributes }
+        delimiterLabel.text = delimiter
+        ({
+            // Workaround to trigger didSet inside the initializer
+            self.text = text
+        })()
+    }
+    
+    // MARK: - Private Methods
+    
+    private func updateTextLabel() {
+        var attributes = isHighlighted ? highlightedTextAttributes : normalTextAttributes
+        if let color = attributes[.backgroundColor] as? UIColor {
+            textLabel.backgroundColor = color
+        }
+        // Avoid overlapped translucent background colors
+        attributes[.backgroundColor] = nil
+        textLabel.attributedText = NSAttributedString(string: text, attributes: attributes)
+        
+        delimiterLabel.textColor = normalTextAttributes[.foregroundColor] as? UIColor
+        delimiterLabel.font = normalTextAttributes[.font] as? UIFont
+    }
+    
+    private func setUpSubviews() {
+        addSubview(textLabel)
+        addSubview(delimiterLabel)
+        textLabel.translatesAutoresizingMaskIntoConstraints = false
+        delimiterLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        let views = [
+            "text": textLabel,
+            "delimiter": delimiterLabel
+        ]
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[text][delimiter]-5-|",
+                                                      options: [.alignAllCenterY],
+                                                      metrics: nil,
+                                                      views: views
+        ))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[text]-5-|",
+                                                      options: [],
+                                                      metrics: nil,
+                                                      views: views
+        ))
+    }
+    
 }

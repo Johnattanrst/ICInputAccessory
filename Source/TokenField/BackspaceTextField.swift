@@ -27,37 +27,37 @@
 import UIKit
 
 internal protocol BackspaceTextFieldDelegate: class {
-  func textFieldShouldDelete(_ textField: BackspaceTextField) -> Bool
+    func textFieldShouldDelete(_ textField: BackspaceTextField) -> Bool
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 
 internal class BackspaceTextField: UITextField {
-
-  weak var backspaceDelegate: BackspaceTextFieldDelegate?
-
-  var showsCursor = true {
-    didSet {
-      // Trigger the lazy instantiation of cursorColor
-      let color = cursorColor
-      tintColor = showsCursor ? color : UIColor.clear
+    
+    weak var backspaceDelegate: BackspaceTextFieldDelegate?
+    
+    var showsCursor = true {
+        didSet {
+            // Trigger the lazy instantiation of cursorColor
+            let color = cursorColor
+            tintColor = showsCursor ? color : UIColor.clear
+        }
     }
-  }
-
-  lazy var cursorColor: UIColor! = { self.tintColor }()
-
-  // MARK: - UIView
-
-  override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-    // Forward touches to the superview when the cursor is hidden.
-    return showsCursor && super.point(inside: point, with: event)
-  }
-
-  // MARK: - UITextField
-
-  @objc func keyboardInputShouldDelete(_ textField: UITextField) -> Bool {
-    return backspaceDelegate?.textFieldShouldDelete(self) ?? true
-  }
-
+    
+    lazy var cursorColor: UIColor! = { self.tintColor }()
+    
+    // MARK: - UIView
+    
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        // Forward touches to the superview when the cursor is hidden.
+        return showsCursor && super.point(inside: point, with: event)
+    }
+    
+    // MARK: - UITextField
+    
+    @objc func keyboardInputShouldDelete(_ textField: UITextField) -> Bool {
+        return backspaceDelegate?.textFieldShouldDelete(self) ?? true
+    }
+    
 }

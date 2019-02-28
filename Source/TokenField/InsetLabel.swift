@@ -27,48 +27,48 @@
 import UIKit
 
 internal class InsetLabel: UILabel {
-
-  enum CornerRadius {
-    case dynamic
-    case constant(CGFloat)
-  }
-
-  var contentEdgeInsets = UIEdgeInsets.zero
-  var cornerRadius = CornerRadius.constant(0)
-
-  convenience init(contentEdgeInsets: UIEdgeInsets, cornerRadius: CornerRadius = .constant(0)) {
-    self.init(frame: CGRect.zero)
-    self.contentEdgeInsets = contentEdgeInsets
-    self.cornerRadius = cornerRadius
-
-    switch cornerRadius {
-    case let .constant(radius) where radius > 0:
-      layer.cornerRadius = radius
-      fallthrough // swiftlint:disable:this fallthrough
-    case .dynamic:
-      layer.masksToBounds = true
-      layer.shouldRasterize = true
-      layer.rasterizationScale = UIScreen.main.scale
-    default:
-      break
+    
+    enum CornerRadius {
+        case dynamic
+        case constant(CGFloat)
     }
-  }
-
-  // MARK: - UIView
-
-  override var intrinsicContentSize: CGSize {
-    let size = super.intrinsicContentSize
-    return CGSize(
-      width: contentEdgeInsets.left + size.width + contentEdgeInsets.right,
-      height: contentEdgeInsets.top + size.height + contentEdgeInsets.bottom
-    )
-  }
-
-  override func layoutSubviews() {
-    super.layoutSubviews()
-    if case .dynamic = cornerRadius {
-      layer.cornerRadius = frame.height / 2
+    
+    var contentEdgeInsets = UIEdgeInsets.zero
+    var cornerRadius = CornerRadius.constant(0)
+    
+    convenience init(contentEdgeInsets: UIEdgeInsets, cornerRadius: CornerRadius = .constant(0)) {
+        self.init(frame: CGRect.zero)
+        self.contentEdgeInsets = contentEdgeInsets
+        self.cornerRadius = cornerRadius
+        
+        switch cornerRadius {
+        case let .constant(radius) where radius > 0:
+            layer.cornerRadius = radius
+        fallthrough // swiftlint:disable:this fallthrough
+        case .dynamic:
+            layer.masksToBounds = true
+            layer.shouldRasterize = true
+            layer.rasterizationScale = UIScreen.main.scale
+        default:
+            break
+        }
     }
-  }
-
+    
+    // MARK: - UIView
+    
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(
+            width: contentEdgeInsets.left + size.width + contentEdgeInsets.right,
+            height: contentEdgeInsets.top + size.height + contentEdgeInsets.bottom
+        )
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if case .dynamic = cornerRadius {
+            layer.cornerRadius = frame.height / 2
+        }
+    }
+    
 }
